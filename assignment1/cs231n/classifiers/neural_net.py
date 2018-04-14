@@ -77,6 +77,8 @@ class TwoLayerNet(object):
     # shape (N, C).                                                             #
     #############################################################################
     pass
+    hidden_layer = np.maximum(0, np.dot(X, W1) + b1)  #  N * H
+    scores = np.dot(hidden_layer, W2) + b2
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -94,6 +96,9 @@ class TwoLayerNet(object):
     # classifier loss.                                                          #
     #############################################################################
     pass
+    f = scores - np.max(scores, axis = 1, keepdims = True)
+    loss = -f[range(N), y].sum() + np.log(np.exp(f).sum(axis = 1)).sum()
+    loss = loss / N + reg * (np.sum(W1 * W1) + np.sum(W2 * W2))
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -106,6 +111,17 @@ class TwoLayerNet(object):
     # grads['W1'] should store the gradient on W1, and be a matrix of same size #
     #############################################################################
     pass
+    dscore = np.exp(f) / np.exp(f).sum(axis = 1, keepdims = True)
+    dscore[range(N), y] -= 1
+    dscore /= N
+    grads['W2'] = np.dot(hidden_layer.T, dscore) + reg * W2
+    grads['b2'] = np.sum(dscore, axis = 0)
+    
+    dhidden = np.dot(dscore, W2.T)
+    dhidden[hidden_layer <= 0.00001] = 0
+    
+    grads['W1'] = np.dot(X.T, dhidden) + reg * W1
+    grads['b1'] = np.sum(dhidden, axis = 0)
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
