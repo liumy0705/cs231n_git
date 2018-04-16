@@ -77,7 +77,7 @@ class TwoLayerNet(object):
     # shape (N, C).                                                             #
     #############################################################################
     pass
-    hidden_layer = np.maximum(0, np.dot(X, W1) + b1)  #  N * H
+    hidden_layer = np.maximum(0, np.dot(X, W1) + b1)  #  N * H  Relu formula
     scores = np.dot(hidden_layer, W2) + b2
     #############################################################################
     #                              END OF YOUR CODE                             #
@@ -96,7 +96,7 @@ class TwoLayerNet(object):
     # classifier loss.                                                          #
     #############################################################################
     pass
-    f = scores - np.max(scores, axis = 1, keepdims = True)
+    f = scores - np.max(scores, axis = 1, keepdims = True) #axis=1 means in line
     loss = -f[range(N), y].sum() + np.log(np.exp(f).sum(axis = 1)).sum()
     loss = loss / N + reg * (np.sum(W1 * W1) + np.sum(W2 * W2))
     #############################################################################
@@ -166,6 +166,9 @@ class TwoLayerNet(object):
       # them in X_batch and y_batch respectively.                             #
       #########################################################################
       pass
+      indices = np.random.choice(num_train, batch_size, replace=True)
+      X_batch = X[indices]
+      y_batch = y[indices]
       #########################################################################
       #                             END OF YOUR CODE                          #
       #########################################################################
@@ -181,6 +184,10 @@ class TwoLayerNet(object):
       # stored in the grads dictionary defined above.                         #
       #########################################################################
       pass
+      self.params['W1'] -= learning_rate * grads['W1']
+      self.params['b1'] -= learning_rate * grads['b1']
+      self.params['W2'] -= learning_rate * grads['W2']
+      self.params['b2'] -= learning_rate * grads['b2']
       #########################################################################
       #                             END OF YOUR CODE                          #
       #########################################################################
@@ -226,6 +233,12 @@ class TwoLayerNet(object):
     # TODO: Implement this function; it should be VERY simple!                #
     ###########################################################################
     pass
+    W1, b1 = self.params['W1'], self.params['b1']
+    W2, b2 = self.params['W2'], self.params['b2']
+
+    hidden_layer = np.maximum(0, np.dot(X, W1) + b1)
+    scores = np.dot(hidden_layer, W2) + b2
+    y_pred = np.argmax(scores, axis = 1)
     ###########################################################################
     #                              END OF YOUR CODE                           #
     ###########################################################################
